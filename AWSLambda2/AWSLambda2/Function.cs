@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 
-namespace LambdaAlexa
+namespace AWSLambda2
 {
     public class Function
     {
@@ -33,13 +33,15 @@ namespace LambdaAlexa
         {
             "https://s3.amazonaws.com/asmr-media/audio/ASMR+10+Triggers+to+Help+You+Sleep+%E2%99%A5.m4a",
             "https://s3.amazonaws.com/asmr-media/audio/ASMR+20+Triggers+To+Help+You+Sleep+%E2%99%A5.m4a",
-            "https://s3.amazonaws.com/asmr-media/audio/ASMR+100+Triggers+To+Help+You+Sleep+%E2%99%A5+4+HOURS.m4a"
+            "https://s3.amazonaws.com/asmr-media/audio/ASMR+100+Triggers+To+Help+You+Sleep+%E2%99%A5+4+HOURS.m4a",
+            ""
         };
         string[] audioNames =
         {
             "10 triggers to help you sleep",
             "20 triggers to help you sleep",
-            "100 triggers to help you sleep"
+            "100 triggers to help you sleep",
+            "what is ASMR"
         };
 
         public Function()
@@ -60,33 +62,44 @@ namespace LambdaAlexa
                 Reprompt reprompt = new Reprompt("How can I help you today?");
                 return ResponseBuilder.Ask("Welcome to ASMR video. Please ask for the list of songs or ask me to play a song", reprompt);
             }
-            else if (input.Request is SessionEndedRequest)
+            if (input.Request is SessionEndedRequest)
             {
                 // End Session by playing message
                 return ResponseBuilder.Tell("Thank you for using this skill. Goodbye.");
+            }// Playback controllerr request
+            if (input.Request is PlaybackControllerRequest)
+            {
+                var playbackReq = input.Request as PlaybackControllerRequest;
+                switch (playbackReq.PlaybackRequestType)
+                {
+                    case PlaybackControllerRequestType.Next:
+                        break;
+                    case PlaybackControllerRequestType.Pause:
+                        break;
+                    case PlaybackControllerRequestType.Play:
+                        break;
+                    case PlaybackControllerRequestType.Previous:
+                        break;
+                }
+                return ResponseBuilder.AudioPlayerStop();
             }
             // ***INTENTS***
             if (requestType == typeof(IntentRequest)) // INTENTS
             {
                 var intentRequest = input.Request as IntentRequest; // Get intent request
                 var intentName = intentRequest.Intent.Name;
-
-                //var countryRequested = intentRequest.Intent.Slots["Country"].Value; // Get slots
-
-                //   return MakeSkillResponse(
-                //           $"You'd like more information about {countryRequested}",
-                //           true); //Response
-
+                
                 //Check request 
                 switch (intentName)
                 {
                     // Play Song Intent
                     case "PlaySongIntent":
-                        var songSlot = intentRequest.Intent.Slots["songName"].Value;
-                        int index = Convert.ToInt32(songSlot);
-                        var audioResponse = ResponseBuilder.AudioPlayerPlay(Alexa.NET.Response.Directive.PlayBehavior.Enqueue, audioUrls[index], audioNames[index]);
+                        var songSlot = intentRequest.Intent.Slots["songName"].Value; // get slot
+                        int index = Convert.ToInt32(songSlot); //get 
 
-                        return audioResponse;
+                        // var audioResponse = ResponseBuilder.AudioPlayerPlay(Alexa.NET.Response.Directive.PlayBehavior.Enqueue, audioUrls[0], audioNames[0]);
+                        var audioRes = ResponseBuilders.AudioPlayerPlay(Alexa.NET.Response.Directive.PlayBehavior.ReplaceAll, audioUrls[index], audioNames[index], null, 0);
+                        return audioRes;
 
                     // ListSongsIntent
                     case "ListSongsIntent":
@@ -98,17 +111,21 @@ namespace LambdaAlexa
                             {
                                 ch = ".";
                             }
-                            text += (i + " " + audioNames[i] + ch);
+                            text += ((i + 1) + ". " + audioNames[i] + ch);
                         }
-
-                        return ResponseBuilder.Tell(text);
+                        text += " Which song do you want me to play?";
+                        Reprompt reprompt = new Reprompt("Which song should I play?");
+                        return ResponseBuilder.Ask(text, reprompt);
 
                     // Help Intent
                     case "AMAZON.HelpIntent":
-                        return ResponseBuilder.Tell("You can ask me 'What is ASMR' or ask me too play one of ASMR Darling's top ten videos or ask for a list of ASMR's top ten videos");
+                        return ResponseBuilder.Tell("You can ask me 'What is ASMR' or ask me to play one of ASMR Darling's top ten videos or ask for a list of ASMR's top ten videos");
 
-                    //AMAZON StpIntent
+                    //AMAZON StopIntent
                     case "AMAZON.StopIntent":
+                        return ResponseBuilder.AudioPlayerStop();
+
+                    case "AMAZON>PauseIntent":
                         return ResponseBuilder.AudioPlayerStop();
 
                     default:
@@ -122,37 +139,24 @@ namespace LambdaAlexa
             }
         }
 
-       /* private SkillResponse MakeSongResponse(int index, string url, int offset)
+        // Main Response Builder
+        private static SkillResponse BuildResponses(IOutputSpeech outputSpeech, bool shouldEndSession, Session sessionAttributes, Reprompt reprompt, ICard card)
         {
-            var response = new ResponseBody
-            {
-                type = "",
-                ShouldEndSession = true,
-                OutputSpeech = new PlainTextOutputSpeech { Text = ("Playing song " + audioNames[index]) }
-            };
-        }
-        */
-        private SkillResponse MakeSkillResponse(string outputSpeech,
-            bool shouldEndSession,
-            string repromptText = "Just say, play a song. To exit, say, exit.")
-        {
-            var response = new ResponseBody
+            SkillResponse response = new SkillResponse { Version = "1.0" };
+            if (sessionAttributes != null) response.SessionAttributes = sessionAttributes.Attributes;
+
+            ResponseBody body = new ResponseBody
             {
                 ShouldEndSession = shouldEndSession,
-                OutputSpeech = new PlainTextOutputSpeech { Text = outputSpeech }
+                OutputSpeech = outputSpeech
             };
 
-            if (repromptText != null)
-            {
-                response.Reprompt = new Reprompt() { OutputSpeech = new PlainTextOutputSpeech() { Text = repromptText } };
-            }
+            if (reprompt != null) body.Reprompt = reprompt;
+            if (card != null) body.Card = card;
 
-            var skillResponse = new SkillResponse
-            {
-                Response = response,
-                Version = "1.0"
-            };
-            return skillResponse;
+            response.Response = body;
+
+            return response;
         }
 
     }
