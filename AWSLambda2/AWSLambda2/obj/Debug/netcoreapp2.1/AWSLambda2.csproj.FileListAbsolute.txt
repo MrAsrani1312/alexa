@@ -5,7 +5,7 @@ C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\bin\Debug\netcoreapp2.1\AWSLam
 C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\obj\Debug\netcoreapp2.1\AWSLambda2.csproj.CoreCompileInputs.cache
 C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\obj\Debug\netcoreapp2.1\AWSLambda2.AssemblyInfoInputs.cache
 C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\obj\Debug\netcoreapp2.1\AWSLambda2.AssemblyInfo.cs
-C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\obj\Debug\netcoreapp2.1\AWSLambda2.csprojAssemblyReference.cache
 C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\bin\Debug\netcoreapp2.1\AWSLambda2.pdb
 C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\obj\Debug\netcoreapp2.1\AWSLambda2.dll
 C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\obj\Debug\netcoreapp2.1\AWSLambda2.pdb
+C:\Users\Admin\source\repos\AWSLambda2\AWSLambda2\obj\Debug\netcoreapp2.1\AWSLambda2.csprojAssemblyReference.cache

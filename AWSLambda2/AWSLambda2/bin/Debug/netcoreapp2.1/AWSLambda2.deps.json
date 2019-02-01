@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.1",
-    "signature": "81a55d502ba14168da6b3d19c0bb230bbce52df6"
+    "signature": "7f4dc24730124b876813b4abfc702fe9eeb1951a"
   },
   "compilationOptions": {},
   "targets": {
@@ -9,6 +9,7 @@
       "AWSLambda2/1.0.0": {
         "dependencies": {
           "Alexa.NET": "1.5.7",
+          "Alexa.NET.APL": "3.6.2",
           "Amazon.Lambda.Core": "1.0.0",
           "Amazon.Lambda.Serialization.Json": "1.4.0",
           "Newtonsoft.Json": "12.0.1"
@@ -25,6 +26,17 @@
           "lib/netstandard1.6/Alexa.NET.dll": {
             "assemblyVersion": "1.5.7.0",
             "fileVersion": "1.5.7.0"
+          }
+        }
+      },
+      "Alexa.NET.APL/3.6.2": {
+        "dependencies": {
+          "Alexa.NET": "1.5.7"
+        },
+        "runtime": {
+          "lib/netstandard1.6/Alexa.NET.APL.dll": {
+            "assemblyVersion": "3.6.2.0",
+            "fileVersion": "3.6.2.0"
           }
         }
       },
@@ -114,6 +126,13 @@
       "sha512": "sha512-Swk3O8cz/x9Yvj92Eru8BcfcBV2MPapVz4NvOqX6OJrMGxK10wkw5EyqR/X3WDkPuJ6iwPrN4oJw4UyJA6brCw==",
       "path": "alexa.net/1.5.7",
       "hashPath": "alexa.net.1.5.7.nupkg.sha512"
+    },
+    "Alexa.NET.APL/3.6.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uWhFRpclKGUvqxWLg10AA4ZTMPv+aIBBU62Wn/A40GxtW9YHUNc4Vfrkt66t1yACagjQNFEKZLN8ubLA9tG7QQ==",
+      "path": "alexa.net.apl/3.6.2",
+      "hashPath": "alexa.net.apl.3.6.2.nupkg.sha512"
     },
     "Amazon.Lambda.Core/1.0.0": {
       "type": "package",

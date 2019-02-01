@@ -1,17 +1,29 @@
 ﻿using Alexa.NET.Request;
 using Alexa.NET.Response;
 using Alexa.NET.Response.Directive;
+using Alexa.NET.APL;
+using Alexa.NET.APL.Commands;
+using Alexa.NET.APL.Components;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using AWSLambda2;
+using System;
 
 namespace Alexa.NET
 {
     public class ResponseBuilders
     {
+        
         #region Tell Responses
         public static SkillResponse Tell(IOutputSpeech speechResponse)
         {
             return BuildResponse(speechResponse, true, null, null, null);
+        }
+
+        internal static SkillResponse BuildResponse(object p1, bool v, object p2, object p3)
+        {
+            throw new NotImplementedException();
         }
 
         public static SkillResponse Tell(string speechResponse)
@@ -302,6 +314,18 @@ namespace Alexa.NET
 
             return response;
         }
+
+        // Play a Video Response.
+        public static SkillResponse PlayVideo(string url)
+        {
+            var response = Tell("Playing the video");
+            response.Response.Directives.Add(new VideoAppDirective(url));
+            
+            Log.Output("---OUTPUT FROM VIDEO FUNCTION---");
+            Log.Output(JsonConvert.SerializeObject(response));
+            return response;
+        }
+
         #region 
 
         #endregion
@@ -357,6 +381,27 @@ namespace Alexa.NET
             return response;
         }
 
+        
+        /*
+        public static SkillResponse BuildAPL()
+        {
+            // Test how to add data
+            string[] IMGurls = { "https://s3.amazonaws.com/asmr-media/images/10triggers.PNG", "https://s3.amazonaws.com/asmr-media/images/20triggers.PNG" };
+            string[] videoName = { "video 1", "video 2" };
+            string[] ID = { "video1", "video2" };
+
+            // Start APL Response
+            Log.Output("APL Response Started Building");
+            Reprompt reprompt = new Reprompt("Which video do you want to play? ");
+
+            // var response = Dependencies.CreateAPL();
+            response.Response.OutputSpeech = new PlainTextOutputSpeech { Text = "Welcome to ASMR Video. Select a video to start playing or ask for help." };
+            response.Response.Reprompt = reprompt;
+
+            Log.Output(JsonConvert.SerializeObject(response));
+            return response;
+        } */
+
         #endregion
 
         public static SkillResponse Empty()
@@ -365,7 +410,7 @@ namespace Alexa.NET
         }
 
         #region Main Response Builder
-        private static SkillResponse BuildResponse(IOutputSpeech outputSpeech, bool shouldEndSession, Session sessionAttributes, Reprompt reprompt, ICard card)
+        public static SkillResponse BuildResponse(IOutputSpeech outputSpeech, bool shouldEndSession, Session sessionAttributes, Reprompt reprompt, ICard card)
         {
             SkillResponse response = new SkillResponse { Version = "1.0" };
             if (sessionAttributes != null) response.SessionAttributes = sessionAttributes.Attributes;
